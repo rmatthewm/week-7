@@ -23,7 +23,7 @@ def fetch_location_data(geolocator, loc):
     if location is None:
         return None
     
-    return {"location": loc, "latitude": location.latitude, "longitude": location.longitude, "type": location.geo_type}
+    return {"location": loc, "latitude": location.latitude, "longitude": location.longitude, "type": location.raw['type']}
 
 def build_geo_dataframe(locations, geolocator):
     geo_data = [fetch_location_data(geolocator, loc) for loc in locations]
