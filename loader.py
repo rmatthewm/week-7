@@ -55,9 +55,9 @@ def build_geo_dataframe(locations, geolocator):
         if loc_data is not None:
             geo_data.append(loc_data)
 
-        # Otherwise, we can an empty entry 
+        # Otherwise, we can add an empty entry for this location
         else:
-            geo_data.append({"location": loc, "latitude": None, "longitude": None, "type": None})
+            geo_data.append({"location": loc, "latitude": pd.NA, "longitude": pd.NA, "type": pd.NA})
         
     return pd.DataFrame(geo_data)
 

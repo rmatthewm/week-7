@@ -41,11 +41,17 @@ class TestLoader(unittest.TestCase):
                          "Type for test case 2 does not match.")
 
     def test_invalid_location(self):
+        # Check that an invalid location has a row of NA values in the returned dataframe
         geolocator = get_geolocator()
-        result = fetch_location_data(geolocator, "asdfqwer1234")
+        df = build_geo_dataframe(['asdfqwer1234'], geolocator)
 
-        self.assertIsNone(result, 
-                          "A nonexistent location should have an empty result.")
+        # Every value should be NA except for the location
+        self.assertEqual(df['location'][0], 'asdfqwer1234')
+
+        # We can check NAness using pandas and assert that is true
+        self.assertTrue(df.isna()['latitude'][0], "Value should be NA.")
+        self.assertTrue(df.isna()['longitude'][0], "Value should be NA.")
+        self.assertTrue(df.isna()['type'][0], "Value should be NA.")
 
 if __name__ == "__main__":
     unittest.main()
