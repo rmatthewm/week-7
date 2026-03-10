@@ -18,6 +18,16 @@ def get_geolocator(agent='h501-student'):
     return Nominatim(user_agent=agent)
 
 def fetch_location_data(geolocator, loc):
+    """ Get the geographical data for a given location using the provided geolocator.
+
+    Args:
+        geolocator (Nominatim): a Nominatim instance 
+        loc (str): a search string for the location
+
+    Returns:
+        dict or None: a dictionary with the location name, coords, and type;
+        returns None if the location is not found
+    """
     location = geolocator.geocode(loc)
 
     if location is None:
@@ -26,7 +36,28 @@ def fetch_location_data(geolocator, loc):
     return {"location": loc, "latitude": location.latitude, "longitude": location.longitude, "type": location.raw['type']}
 
 def build_geo_dataframe(locations, geolocator):
-    geo_data = [fetch_location_data(geolocator, loc) for loc in locations]
+    """ Build a pandas DataFrame with geographical data for the given locations.
+
+    Args:
+        locations (list): a list of location names
+        geolocator (Nominatim): a Nominatim instance
+
+    Returns:
+        pandas.DataFrame: a DataFrame with the geographical data for the given locations
+    """
+
+    # We need to handle any missing data
+    geo_data = []
+    for loc in locations:
+        loc_data = fetch_location_data(geolocator, loc)
+
+        # If the data is not None, we can add it
+        if loc_data is not None:
+            geo_data.append(loc_data)
+
+        # Otherwise, we can an empty entry 
+        else:
+            geo_data.append({"location": loc, "latitude": None, "longitude": None, "type": None})
         
     return pd.DataFrame(geo_data)
 
