@@ -11,6 +11,10 @@ in the geolocator into each method because I think the class should serve as
 a wrapper for the Nominatim instance and so it should already have an instance.
 But I don't know how much changing from the original assignment is acceptable
 especially given the autograder. 
+
+POST NOTE NOTE: I realized there is no autograder this week, so I will change
+it how I want, but I left the note because I think it is relavent more
+generally for how I approach the assignments.
 """
 
 class GeoLoader:
@@ -29,10 +33,11 @@ class GeoLoader:
         """
         Return the Nominatim instance or create a new one with a new agent name.
 
-        Parameters
-        ----------
-        agent : str, optional
-            Agent name for Nominatim, by default 'h501-student'
+        Args: 
+            agent (str, optional): agent name for Nominatim, by default 'h501-student'
+
+        Returns:
+            Nominatim: the Nominatim instance
         """
         # If the agent name given matches what we already used, just return
         # the current instance 
@@ -41,25 +46,26 @@ class GeoLoader:
 
         return Nominatim(user_agent=agent)
 
-    def fetch_location_data(self, geolocator, loc):
+    def fetch_location_data(self, loc):
         """ Get the geographical data for a given location using the provided geolocator.
 
         Args:
-            geolocator (Nominatim): a Nominatim instance 
             loc (str): a search string for the location
 
         Returns:
             dict or None: a dictionary with the location name, coords, and type;
             returns None if the location is not found
         """
-        location = geolocator.geocode(loc)
+        location = self.__geolocator.geocode(loc)
 
+        # The result from the Nominatim search is None, return None
         if location is None:
             return None
         
+        # Otherwise, put the data we want in a dictionary to return
         return {"location": loc, "latitude": location.latitude, "longitude": location.longitude, "type": location.raw['type']}
 
-    def build_geo_dataframe(self, locations, geolocator):
+    def build_geo_dataframe(self, locations):
         """ Build a pandas DataFrame with geographical data for the given locations.
 
         Args:
@@ -73,7 +79,7 @@ class GeoLoader:
         # We need to handle any missing data
         geo_data = []
         for loc in locations:
-            loc_data = self.fetch_location_data(geolocator, loc)
+            loc_data = self.fetch_location_data(loc)
 
             # If the data is not None, we can add it
             if loc_data is not None:
@@ -87,11 +93,11 @@ class GeoLoader:
 
 
 if __name__ == "__main__":
+    # Test things
     loader = GeoLoader()
-    geo = loader.get_geolocator()
 
     locations = ["Museum of Modern Art", "iuyt8765(*&)", "Alaska", "Franklin's Barbecue", "Burj Khalifa"]
 
-    df = loader.build_geo_dataframe(locations, geo)
+    df = loader.build_geo_dataframe(locations)
 
     df.to_csv("./geo_data.csv")

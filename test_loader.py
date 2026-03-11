@@ -12,9 +12,6 @@ class TestLoader(unittest.TestCase):
         # Get the loader
         loader = GeoLoader()
 
-        # Get the geolocator
-        geolocator = loader.get_geolocator()
-
         # There is some slight difference between the coordinates returned by Nominatim
         # and those found using Google, so we will check that the coords are within a
         # certain distance.
@@ -22,7 +19,7 @@ class TestLoader(unittest.TestCase):
         distance_threshold = 100
 
         # Get the results for the two test locations
-        results = loader.build_geo_dataframe([known_loc1['location'], known_loc2['location']], geolocator)
+        results = loader.build_geo_dataframe([known_loc1['location'], known_loc2['location']])
 
         # Test case 1
         # Use haversine to get the distance between the coords
@@ -51,8 +48,7 @@ class TestLoader(unittest.TestCase):
     def test_invalid_location(self):
         # Check that an invalid location has a row of NA values in the returned dataframe
         loader = GeoLoader()
-        geolocator = loader.get_geolocator()
-        df = loader.build_geo_dataframe(['asdfqwer1234'], geolocator)
+        df = loader.build_geo_dataframe(['asdfqwer1234'])
 
         # Every value should be NA except for the location
         self.assertEqual(df['location'][0], 'asdfqwer1234')
